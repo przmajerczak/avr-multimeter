@@ -47,53 +47,53 @@ unsigned char column_pointers[4] = {0x00, 0x00, 0x00, 0x00};
 
 void display_command(unsigned char cmd) {
 	/* set CS low - start a transfer */
-	PORTB &=~ (1 << CS);		
+	PORTD &=~ (1 << CS);		
 	
 	/* set DC low - indicates command transfer */
-	PORTB &=~ (1 << DC);			
+	PORTD &=~ (1 << DC);			
 	
 	/* set SCK low */
-	PORTB &=~ (1 << SCK);		
+	PORTD &=~ (1 << SCK);		
 	
 	for (int i = 7; i >= 0; --i) {
 		/* set i-th bit on the SDA*/
 		if (cmd & (1 << i))
-			PORTB |= (1 << SDA);
+			PORTD |= (1 << SDA);
 		else
-			PORTB &=~ (1 << SDA);
+			PORTD &=~ (1 << SDA);
 			
 		/* generate rising edge */
-		PORTB ^= (1 << SCK);
-		PORTB ^= (1 << SCK);
+		PORTD ^= (1 << SCK);
+		PORTD ^= (1 << SCK);
 	}
 	
 	/* set CS high - end a transfer */
-	PORTB |= (1 << CS); 		
+	PORTD |= (1 << CS); 		
 }
 void display_data(unsigned char data) {	
 	/* set CS low - start a transfer */
-	PORTB &=~ (1 << CS);
+	PORTD &=~ (1 << CS);
 	
 	/* set DC high - indicates data transfer */
-	PORTB |= (1 << DC);
+	PORTD |= (1 << DC);
 	
 	/* set SCK low */
-	PORTB &=~ (1 << SCK);	
+	PORTD &=~ (1 << SCK);	
 	
 	for (int i = 7; i >= 0; --i) {
 		/* set i-th bite on the SDA*/
 		if (data & (1 << i))
-			PORTB |= (1 << SDA);
+			PORTD |= (1 << SDA);
 		else
-			PORTB &=~ (1 << SDA);
+			PORTD &=~ (1 << SDA);
 			
 		/* generate rising edge */
-		PORTB ^= (1 << SCK);
-		PORTB ^= (1 << SCK);
+		PORTD ^= (1 << SCK);
+		PORTD ^= (1 << SCK);
 	}
 	
 	/* set CS high - end a transfer */
-	PORTB |= (1 << CS); 
+	PORTD |= (1 << CS); 
 }
 void display_clear_line(unsigned char row) {
 
@@ -141,15 +141,15 @@ void display_clear_area(unsigned char start, unsigned char stop, unsigned char r
 }
 void display_init(void) {
 	/* set RES, SCK, SDA, CS and DC as outputs */
-	DDRB |= (1 << RES) | (1 << SCK) | (1 << SDA) | (1 << CS) | (1 << DC);
+	DDRD |= (1 << RES) | (1 << SCK) | (1 << SDA) | (1 << CS) | (1 << DC);
 	
 	/* set CS high - low indicates transfer */
-	PORTB |= (1 << CS);
+	PORTD |= (1 << CS);
 	
 	/* inital RES sequence */
-	PORTB &=~(1 << RES);
+	PORTD &=~(1 << RES);
 	_delay_ms(10);
-	PORTB |= (1 << RES);	
+	PORTD |= (1 << RES);	
 
 	/* set display on */
 	display_command(0xAF);

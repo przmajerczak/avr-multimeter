@@ -4,7 +4,7 @@ OBJCOPY=avr-objcopy
 CC_FLAGS=-std=c99 -Wall -g -Os -mmcu=${MCU}
 OBJCOPY_FLAGS=-j .text -j .data -O ihex 
 PROG=usbasp
-OBJFILES=main.o display.o
+OBJFILES=main.o display.o utilities.o
 TARGET=main
 
 all: ${TARGET}.hex
@@ -14,6 +14,9 @@ main.o: main.c
 
 display.o: display.c display.h
 	${CC} ${CC_FLAGS} -c display.c -o display.o
+
+utilities.o: utilities.c utilities.h
+	${CC} ${CC_FLAGS} -c utilities.c -o utilities.o
 
 ${TARGET}.hex: ${OBJFILES}
 	${CC} ${CC_FLAGS} -o ${TARGET}.elf ${OBJFILES}

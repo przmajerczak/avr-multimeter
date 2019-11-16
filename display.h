@@ -1,12 +1,12 @@
 #ifndef _display_H
 #define _display_H
 
-//definiować tu też port na później
-#define SCK	PB0
-#define SDA	PB1
-#define RES	PB2
-#define DC	PB3
-#define CS	PB4	
+// PORTD is for digital outputs
+#define SCK	PD2
+#define SDA	PD3
+#define RES	PD4
+#define DC	PD5
+#define CS	PD6
 
 void display_command(unsigned char cmd);
 void display_data(unsigned char data);
