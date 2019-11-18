@@ -8,10 +8,10 @@
 #define	CIRCUIT_POWER_SWITCH		PD1
 #define	CIRCUIT_DISCHARGE_SWITCH	PD0
 
-double ADC_unipolar_measurement(int measures);
-int R150_selected(void);
 void utilities_init(void);
-void resistance_measurement(void);
+double ADC_unipolar_measurement(int input);
+int R150_selected(void);
+double resistance_measurement(int inner_resistance);
 void capacitance_measurement(void);
 void inductance_measurement(void);
 void voltage_measurement(void);
