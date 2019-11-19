@@ -9,15 +9,18 @@ const int ADC_MEASUREMENT_AVERAGING_LEVEL = 4;
 void utilities_init(void) {
 	//enable display
 	display_init();
-	//enable ADC
-	ADCSRA |= (1 << ADEN);
-	// set AVCC as reference voltage
-	ADMUX |= (1 << REFS0);
 	
 }
 double ADC_unipolar_measurement(int input) {
-	ADMUX &= 0xf0; //clears ADC input selection
-	ADMUX |= input; //chooses desired input
+	// enable ADC
+	ADCSRA |= (1 << ADEN);
+	// set AVCC as reference voltage
+	ADMUX |= (1 << REFS0);
+	_delay_ms(50);
+	// clears ADC input selection
+	ADMUX &= 0xf0; 
+	// chooses desired input
+	ADMUX |= input; 
 
 	int results = 0.0;
 	for (int i = 0; i < ADC_MEASUREMENT_AVERAGING_LEVEL; ++i) {
@@ -30,6 +33,9 @@ double ADC_unipolar_measurement(int input) {
 		results += ADC;
 	}
 	
+	// disable ADC
+	ADCSRA &=~ (1 << ADEN);
+
 	return results / ADC_MEASUREMENT_AVERAGING_LEVEL;
 }
 int R150_selected(void) {	
@@ -99,7 +105,7 @@ void utilities_resistance(void) {
 		curr = resistance_measurement(inner_resistance);
 	}
 }
-void capacitance_measurement(void) {
+void capacitance_measurement(int inner_resistance) {
 
 }
 void inductance_measurement(void) {

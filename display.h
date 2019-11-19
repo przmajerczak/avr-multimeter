@@ -16,7 +16,7 @@ void display_clear_area(unsigned char start, unsigned char stop, unsigned char r
 void display_init(void);
 void display_write(unsigned char character, unsigned char row);
 void display_space(int width, unsigned char row);
-void display_write_number(int number, unsigned char row);
+void display_write_number(long long number, unsigned char row);
 void display_write_double(double number, unsigned char precision, unsigned char row);
 
 #endif

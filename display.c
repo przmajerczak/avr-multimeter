@@ -224,7 +224,7 @@ void display_write(unsigned char character, unsigned char row) {
 		column_pointers[row] += character_length;
 	}	
 }
-void display_write_number(int number, unsigned char row) {
+void display_write_number(long long number, unsigned char row) {
 	/* count number's digits */
 	char cnt = 0;
 	int temp = number;
