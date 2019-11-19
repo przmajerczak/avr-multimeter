@@ -12,8 +12,11 @@ void utilities_init(void);
 double ADC_unipolar_measurement(int input);
 int R150_selected(void);
 double resistance_measurement(int inner_resistance);
+void utilities_resistance(void);
 void capacitance_measurement(void);
 void inductance_measurement(void);
 void voltage_measurement(void);
+
+
 
 #endif
