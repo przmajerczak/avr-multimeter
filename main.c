@@ -1,16 +1,50 @@
 #define F_CPU 8000000L
 #include <avr/io.h>
-#include <avr/interrupt.h>
 #include <util/delay.h>
 #include "display.h"
 #include "utilities.h"
 
+
+//extern const int DISCHARGE_THRESHOLD;
+
 int main() {
 
 	utilities_init();
+	
+
+	// enable analog comparator interrupt
+	ACSR |= (1 << ACIE);
+
+	TIMSK |= (1 << TOIE1);
+	
+
+	
+	// enable interrupts`
+	
+	DDRD |= (1 << CIRCUIT_POWER_SWITCH);	
+	
+	while(1) {
+
+		// check for selected resistance 
+		int inner_resistance = R270_selected() ? 270 : 10000;
+		display_clear_line(3);
+		display_write_number(inner_resistance, 3);
+		
+
+		capacitance_measurement(inner_resistance);
+
+		
+		
+		
+	}
+
+	return 0;}
+	/*
+
+
 	display_write('.', 3);
 	// check for selected resistance 
-	int inner_resistance = R150_selected() ? 150 : 10000;
+	int inner_resistance = R270_selected() ? 270 : 10000;
 display_write('<', 3);
 	//set CIRCUIT_POWER_SWITCH as an low output and wait for circuit to discharge
 	DDRD |= (1 << CIRCUIT_POWER_SWITCH);	
@@ -26,7 +60,7 @@ display_write('<', 3);
 	// chooses desired input
 	ADMUX |= 1; 
 display_write_number(1, 3);
-	// enable interrupts
+	// enable interrupts`
 	sei();
 	// enable analog comparator interrupt
 	ACSR |= (1 << ACIE);
@@ -51,10 +85,5 @@ display_write_number(2, 3);
 
 
 	return 0;
-}
+}*/
 
-ISR(ANA_COMP_vect) {
-	// stop timer1
-	TCCR1B &=~ (1 << CS10);
-	display_write_number(77777, 2);
-}

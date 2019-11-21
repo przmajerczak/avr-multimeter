@@ -227,7 +227,7 @@ void display_write(unsigned char character, unsigned char row) {
 void display_write_number(long long number, unsigned char row) {
 	/* count number's digits */
 	char cnt = 0;
-	int temp = number;
+	long long temp = number;
 	while (temp) {
 		++cnt;
 		temp /= 10;
@@ -260,12 +260,12 @@ void display_write_double(double number, unsigned char precision, unsigned char 
 		number *= -1;
 	}
 
-	display_write_number((int)number, row);
+	display_write_number((long long)number, row);
 	display_write('.', row);
 
 	while (precision--) {
-		number -= (int)number;
+		number -= (long long)number;
 		number *= 10;
-		display_write('0' + (int)number, row);
+		display_write('0' + (long long)number, row);
 	}
 }
