@@ -13,7 +13,8 @@ double ADC_unipolar_measurement(int input);
 int R270_selected(void);
 double resistance_measurement(int inner_resistance);
 void utilities_resistance(void);
-void capacitance_measurement(int inner_resistance);
+double capacitance_measurement(int inner_resistance);
+void utilities_capacitance(void);
 void inductance_measurement(void);
 void voltage_measurement(void);
 

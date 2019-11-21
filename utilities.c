@@ -9,6 +9,7 @@ const int ADC_MEASUREMENT_AVERAGING_LEVEL = 4;
 const int DISCHARGE_THRESHOLD = 0;
 const long long TIMER1_CYCLE_DURATION_us = 65536 / (F_CPU / 1000000);
 const long long TIMER1_COUNT_DURATION_us = 1 / (F_CPU / 1000000);
+
 int timer1_cycles;
 
 void utilities_init(void) {
@@ -18,6 +19,8 @@ void utilities_init(void) {
 	ADCSRA |= (1 << ADEN);
 	// set AVCC as reference voltage
 	ADMUX |= (1 << REFS0);
+	// set CIRCUIT_POWER_SWITCH as an output
+	DDRD |= (1 << CIRCUIT_POWER_SWITCH);	
 }
 double ADC_unipolar_measurement(int input) {
 	//_delay_ms(50);
@@ -109,7 +112,7 @@ void utilities_resistance(void) {
 		curr = resistance_measurement(inner_resistance);
 	}
 }
-void capacitance_measurement(int inner_resistance) {
+double capacitance_measurement(int inner_resistance) {
 	long long half_charge_time_ns;
 	timer1_cycles = 0;
 	TCNT1 = 0;
@@ -129,27 +132,55 @@ void capacitance_measurement(int inner_resistance) {
 	cli();
 
 	half_charge_time_ns = 1000 * (timer1_cycles * TIMER1_CYCLE_DURATION_us + TCNT1 * TIMER1_COUNT_DURATION_us);
-	double capacitance = half_charge_time_ns / (0.7 * inner_resistance);
+	return half_charge_time_ns / (0.7 * inner_resistance);
+}
+void utilities_capacitance(void) {
+	// enable analog comparator interrupt
+	ACSR |= (1 << ACIE);
+	//enable timer1 overflow interrupt
+	TIMSK |= (1 << TOIE1);
+
+	int inner_resistance = R270_selected() ? 270 : 10000;
 	char prefix;
-	if (capacitance < 0) {
-		prefix = 'p';
-		capacitance *= 1000;
-	} else if (capacitance > 1000000) {
-		prefix = 'm';
-		capacitance /= 1000000;
-	} else if (capacitance > 1000) {
-		prefix = 'u';
-		capacitance /= 1000;
+	double curr = capacitance_measurement(inner_resistance);
+	double temp = 0;
+
+	if (curr < 0) {
+		prefix = 'p';	curr *= 1000;
+	} else if (curr > 1000000) {
+		prefix = 'm';	curr /= 1000000;
+	} else if (curr > 1000) {
+		prefix = 'u';	curr /= 1000;
 	} else
 		prefix = 'n';
-	display_clear_line(0);
-	display_write_double(capacitance, 1, 0);
-	display_write(' ', 0);
-	display_write(prefix, 0);
-	display_write('F', 0);
-	
-	
 
+	while (1) {
+		if (curr != temp) {
+			display_clear_line(0);
+			display_write_double(curr, 1, 0);
+			display_write(' ', 0);
+			display_write(prefix, 0);
+			display_write('F', 0);
+			_delay_ms(100);
+		}
+
+		temp = curr;
+		inner_resistance = R270_selected() ? 270 : 10000;
+		curr = capacitance_measurement(inner_resistance);
+
+		if (curr < 0) {
+			prefix = 'p';	curr *= 1000;
+		} else if (curr > 1000000) {
+			prefix = 'm';	curr /= 1000000;
+		} else if (curr > 1000) {
+			prefix = 'u';	curr /= 1000;
+		} else
+			prefix = 'n';
+	}
+
+	// undo changes made
+	ACSR &=~ (1 << ACIE);
+	TIMSK &=~ (1 << TOIE1);
 }
 void inductance_measurement(void) {
 
